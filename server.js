@@ -1,10 +1,11 @@
 require('dotenv').config({ path: './key.env' });
+import fetch from 'node-fetch'; // Node.js v20+ uses ESM style
+
 const express = require('express');
 const cors = require('cors');
 
 const app = express();
-const PORT = 5000;
-
+const PORT = 5500;
 const ACCESS_KEY = process.env.UNSPLASH_KEY;
 
 app.use(cors());
