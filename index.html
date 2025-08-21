@@ -12,12 +12,111 @@
       color: #fff;
     }
 
+    /* ===== TOP NAVBAR ===== */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: .8rem 1rem;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+    }
+
+    .logo img {
+      width: 30px;
+      height: 30px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .nav-links a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 400;
+    }
+
+    .right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .talk {
+      background: #ffffff;
+      color: #000;
+      border: none;
+      padding: 0.6rem 1rem;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .social svg {
+      width: 18px;
+      height: 18px;
+      fill: #fff;
+    }
+
+    /* ===== SIDEBAR ===== */
+    .menu-toggle {
+      display: none;
+      cursor: pointer;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -100%;
+      width: 70%;
+      max-width: 300px;
+      height: 100%;
+      background: #000;
+      color: #fff;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      transition: left 0.3s ease;
+      z-index: 1500;
+    }
+
+    .sidebar.active {
+      left: 0;
+    }
+
+    .sidebar a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 18px;
+    }
+
+    @media (max-width: 768px) {
+      .nav-links,
+      .social {
+        display: none;
+      }
+
+      .menu-toggle {
+        display: block;
+      }
+    }
+
+    /* ===== GALLERY ===== */
     .gallery {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       gap: 20px;
-      padding: 20px;
-      padding-bottom: 120px; /* To avoid overlap with bottom nav */
+      padding: 100px 20px 60px; /* Extra top padding for navbar */
     }
 
     .gallery img {
@@ -25,15 +124,15 @@
       height: 300px;
       object-fit: cover;
       cursor: pointer;
-      border-radius: 0;
-      transition: transform 0.2s;
+      border-radius: 8px;
+      transition: transform 0.3s;
     }
 
     .gallery img:hover {
       transform: scale(1.05);
     }
 
-    /* Modal */
+    /* ===== MODAL ===== */
     .modal {
       display: none;
       position: fixed;
@@ -42,9 +141,9 @@
       background: rgba(0,0,0,0.9);
       justify-content: center;
       align-items: center;
-      overflow: auto;
+      flex-direction: column;
       padding: 20px;
-      z-index: 10;
+      z-index: 2000;
     }
 
     .modal-content {
@@ -69,11 +168,12 @@
       gap: 10px;
       flex-wrap: wrap;
       justify-content: center;
+      margin-top: 10px;
     }
 
     .similar-items img {
-      width: 100px;
-      height: 100px;
+      width: 80px;
+      height: 80px;
       object-fit: cover;
       border-radius: 6px;
       cursor: pointer;
@@ -85,45 +185,8 @@
       right: 30px;
       font-size: 40px;
       font-weight: bold;
+      color: #fff;
       cursor: pointer;
-    }
-
-    /* Bottom nav container */
-    .bottom-nav {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #ededed9f;
-      color: black;
-      backdrop-filter: blur(10px);
-      border-radius: 30px;
-      padding: 20px 30px;
-      display: flex;
-      gap: 30px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      z-index: 100;
-    }
-
-    .bottom-nav a {
-      color: black;
-      text-decoration: none;
-      font-size: 18px;
-      transition: color 0.3s;
-    }
-
-    .bottom-nav a:hover {
-      color: #ffcc00;
-    }
-
-    @media (max-width: 500px) {
-      .bottom-nav {
-        gap: 20px;
-        padding: 15px 20px;
-      }
-      .bottom-nav a {
-        font-size: 16px;
-      }
     }
 
     .loading {
@@ -132,197 +195,53 @@
       font-size: 18px;
       color: #ccc;
     }
-    
-.bottom-nav {
-  position: fixed;
-  top: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: .6rem 1rem;
-  width: 100%;
-  z-index: 1000;
-  background: #0000007c;
-  backdrop-filter: blur(10px);
-  
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.logo img {
-    width:30px;
-    height: 30px;
-  fill: white;
-}
-
-.nav-links {
-  display: flex;
-  gap: 1.5rem;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.nav-links a {
-  text-decoration: none;
-  color: #fff;
-  font-weight: 400;
-  font-size: 13px;
-}
-
-.social {
-  display: flex;
-  gap: 1rem;
-}
-
-.social a {
-  text-decoration: none;
-  font-size: .7rem;
-  fill: white;
-}
-.social svg{
-    font-size: 10px;
-}
-
-
-/* Sidebar toggle button */
-.menu-toggle {
-  display: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-}
-
-.right{
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-/* Sidebar styles */
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: black;
-  font-size: 40px;
-  color:white;
-  padding: 2rem 1.5rem;
-  transition: left 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-.sidebar  a{
-    color: white;
-    text-decoration: none;
-    margin-bottom: 20px;
-}
-.sidebar .top{
-margin-top: 2rem;
-display: flex;
-flex-direction: column;
-}
-
-.sidebar.active {
-  left: 0;
-}
-.sidebar .social{
-    margin-top: auto;
-    display: flex;
-    gap: 1rem;
-  }
-  /* Mobile styles */
-@media (max-width: 768px) {
-  .nav-links,
-  .social, .category,  .ite {
-    display: none;
-  }
-
- 
-
-  nav .talk{
-    padding: 0.3rem .7rem;
-    border-radius: 30px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-  }
-  .menu-toggle {
-    display: block;
-  }
-}
-.talk{
-  background: #ffffff;
-  color: #000000;
-  border: none;
-  padding: 0.6rem 1rem;
-  border-radius: 30px;
-  cursor: pointer;
-  font-size: 18px;
-  font-weight: 500;
-  transition: background 0.3s ease;
-}
   </style>
 </head>
 <body>
+  <!-- NAVBAR -->
   <nav>
-    <div class="logo"><img src="assets/H4.svg" alt=""></div>
+    <div class="logo"><img src="assets/H4.svg" alt="Logo"></div>
     <div class="nav-links">
       <a href="#">Work</a>
       <a href="about.html">About</a>
       <a href="#">Services</a>
     </div>
-
     <div class="right">
-        <button class="talk">Let's Talk</button>
-
-    <a href="https://www.instagram.com/wandile_010"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 48 48"
-        style="fill:#FFFFFF;">
-        <path d="M 16.5 5 C 10.16639 5 5 10.16639 5 16.5 L 5 31.5 C 5 37.832757 10.166209 43 16.5 43 L 31.5 43 C 37.832938 43 43 37.832938 43 31.5 L 43 16.5 C 43 10.166209 37.832757 5 31.5 5 L 16.5 5 z M 16.5 8 L 31.5 8 C 36.211243 8 40 11.787791 40 16.5 L 40 31.5 C 40 36.211062 36.211062 40 31.5 40 L 16.5 40 C 11.787791 40 8 36.211243 8 31.5 L 8 16.5 C 8 11.78761 11.78761 8 16.5 8 z M 34 12 C 32.895 12 32 12.895 32 14 C 32 15.105 32.895 16 34 16 C 35.105 16 36 15.105 36 14 C 36 12.895 35.105 12 34 12 z M 24 14 C 18.495178 14 14 18.495178 14 24 C 14 29.504822 18.495178 34 24 34 C 29.504822 34 34 29.504822 34 24 C 34 18.495178 29.504822 14 24 14 z M 24 17 C 27.883178 17 31 20.116822 31 24 C 31 27.883178 27.883178 31 24 31 C 20.116822 31 17 27.883178 17 24 C 17 20.116822 20.116822 17 24 17 z"></path>
-        </svg></a>
-        <a href="https://www.x.com/@Rxch_010"><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 30 30"
-            style="fill:#FFFFFF;">
-            <path d="M26.37,26l-8.795-12.822l0.015,0.012L25.52,4h-2.65l-6.46,7.48L11.28,4H4.33l8.211,11.971L12.54,15.97L3.88,26h2.65 l7.182-8.322L19.42,26H26.37z M10.23,6l12.34,18h-2.1L8.12,6H10.23z"></path>
-            </svg></a>
-            <div class="menu-toggle" id="menu-toggle">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#fff">
-                     <path d="M180-370v-0h600v60H180Zm0-160v-120h600v60H180Z"/>
-                </svg>
-            </div></div>
+      <button class="talk">Let's Talk</button>
+      <a href="https://www.instagram.com/wandile_010">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+          <path d="M16.5 5C10.2 5 5 10.2 5 16.5V31.5C5 37.8 10.2 43 16.5 43H31.5C37.8 43 43 37.8 43 31.5V16.5C43 10.2 37.8 5 31.5 5H16.5zM24 14C18.5 14 14 18.5 14 24C14 29.5 18.5 34 24 34C29.5 34 34 29.5 34 24C34 18.5 29.5 14 24 14z"></path>
+        </svg>
+      </a>
+      <div class="menu-toggle" id="menu-toggle">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" width="24px" fill="#fff" viewBox="0 -960 960 960">
+          <path d="M180-370h600v60H180Zm0-160h600v60H180Z"/>
+        </svg>
+      </div>
+    </div>
   </nav>
 
+  <!-- SIDEBAR -->
   <div class="sidebar" id="sidebar">
-    <div class="top">
     <a href="#">Work</a>
     <a href="about.html">About</a>
-    <a href="#">Services</a></div>
-
-    
-  </div>
-  <!-- Bottom Navigation -->
-  <div class="bottom-nav">
-    <a href="#home">Home</a>
-    <a href="#about">About</a>
-    <a href="#career">Career</a>
+    <a href="#">Services</a>
   </div>
 
-<div class="gallery" id="gallery"></div>
-<div class="loading" id="loading">Loading...</div>
+  <!-- GALLERY -->
+  <div class="gallery" id="gallery"></div>
+  <div class="loading" id="loading">Loading...</div>
 
-<div class="modal" id="modal">
-  <span class="close" id="close">&times;</span>
-  <div class="modal-content">
-    <img id="modal-img" src="" alt="">
-    <div class="description" id="modal-desc"></div>
-    <h3>Similar Items</h3>
-    <div class="similar-items" id="similar-items"></div>
+  <!-- MODAL -->
+  <div class="modal" id="modal">
+    <span class="close" id="close">&times;</span>
+    <div class="modal-content">
+      <img id="modal-img" src="" alt="">
+      <div class="description" id="modal-desc"></div>
+      <h3>Similar Items</h3>
+      <div class="similar-items" id="similar-items"></div>
+    </div>
   </div>
-</div>
 
 <script>
 const accessKey = 'rp9_shDmKuIKGdLrL6g0l7-vvAWYuf2RTSa717SRuM0';
@@ -333,13 +252,15 @@ const modalDesc = document.getElementById('modal-desc');
 const similarItems = document.getElementById('similar-items');
 const closeBtn = document.getElementById('close');
 const loadingDiv = document.getElementById('loading');
+const sidebar = document.getElementById('sidebar');
+const menuToggle = document.getElementById('menu-toggle');
 
 let page = 1;
 const perPage = 12;
 let loading = false;
 let query = 'technology';
 
-// Fetch images from Unsplash
+// Fetch images
 async function fetchImages(query, page) {
   loading = true;
   loadingDiv.style.display = 'block';
@@ -355,9 +276,9 @@ async function loadGallery() {
   const images = await fetchImages(query, page);
   images.forEach(img => {
     const imageElem = document.createElement('img');
-    imageElem.src = img.urls.regular; // Better quality
+    imageElem.src = img.urls.regular;
     imageElem.alt = img.alt_description || 'Unsplash Image';
-    imageElem.loading = 'lazy'; // Lazy loading
+    imageElem.loading = 'lazy';
     imageElem.addEventListener('click', () => openModal(img));
     gallery.appendChild(imageElem);
   });
@@ -370,7 +291,6 @@ function openModal(img) {
   modalDesc.textContent = img.alt_description || 'No description available';
   similarItems.innerHTML = '';
 
-  // Load similar items based on first tag or default query
   const relatedQuery = img.tags && img.tags.length > 0 ? img.tags[0].title : 'technology';
   fetchImages(relatedQuery, 1).then(similar => {
     similar.forEach(s => {
@@ -385,11 +305,11 @@ function openModal(img) {
 
 // Close modal
 closeBtn.onclick = () => modal.style.display = 'none';
-window.onclick = e => {
-  if (e.target == modal) modal.style.display = 'none';
-}
+modal.addEventListener('click', e => {
+  if (e.target === modal) modal.style.display = 'none';
+});
 
-// Infinite scroll
+// Infinite scroll with throttle
 window.addEventListener('scroll', () => {
   if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 && !loading) {
     page++;
@@ -397,17 +317,13 @@ window.addEventListener('scroll', () => {
   }
 });
 
-// Initial load
-loadGallery();
-
-const menuToggle = document.getElementById("menu-toggle");
-const sidebar = document.getElementById("sidebar");
-menuToggle.addEventListener("click", () => {
-  sidebar.classList.toggle("active");
+// Sidebar toggle
+menuToggle.addEventListener('click', () => {
+  sidebar.classList.toggle('active');
 });
 
-
+// Initial load
+loadGallery();
 </script>
-
 </body>
 </html>
