@@ -1,8 +1,5 @@
-// Load env variables from key.env
 require('dotenv').config({ path: './key.env' });
-
 const express = require('express');
-const fetch = require('node-fetch');
 const cors = require('cors');
 
 const app = express();
@@ -12,8 +9,6 @@ const ACCESS_KEY = process.env.UNSPLASH_KEY;
 
 app.use(cors());
 
-// Endpoint to fetch images
-// Example: GET /api/images?query=technology&count=12
 app.get('/api/images', async (req, res) => {
   try {
     const query = req.query.query || 'technology';
