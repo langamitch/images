@@ -139,6 +139,24 @@
       font-size: 18px;
       color: #ccc;
     }
+    .load-more {
+  display: none;
+  margin: 20px auto;
+  background: #ffcc00;
+  color: #000;
+  border: none;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.load-more:hover {
+  background: #e6b800;
+}
+
     .talk{
   background: #ffffff;
   color: #000000;
@@ -154,7 +172,7 @@
 nav {
   position: fixed;
   top: 0;
-  display: flex;
+  display: none;
   justify-content: space-between;
   align-items: center;
   padding: .6rem 1rem;
@@ -230,6 +248,46 @@ nav {
   align-items: center;
   gap: 1rem;
 }
+
+.category-bar {
+  display: flex;
+  gap: 15px;
+  overflow-x: auto;
+ padding:0 10px;
+  background: #111;
+  position: sticky;
+  top: 0px; /* stays below navbar */
+  z-index: 900;
+  scrollbar-width: none; /* Firefox */
+}
+
+.category-bar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+.category-btn {
+  background: transparent;
+  color: #333;
+  border: none;
+  padding: 10px 0px;
+  border-radius: 0px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap; /* Prevent text wrapping */
+  transition: background 0.3s ease;
+}
+
+.category-btn:hover {
+  background: #444;
+}
+
+.category-btn.active {
+  background: transparent;
+  text-decoration: underline;
+  color: white;
+}
+
   </style>
 </head>
 <body>
@@ -254,7 +312,21 @@ nav {
             <path d="M26.37,26l-8.795-12.822l0.015,0.012L25.52,4h-2.65l-6.46,7.48L11.28,4H4.33l8.211,11.971L12.54,15.97L3.88,26h2.65 l7.182-8.322L19.42,26H26.37z M10.23,6l12.34,18h-2.1L8.12,6H10.23z"></path>
             </svg></a>
 </div>
+
+
   </nav>
+  <!-- Horizontal Category Scroll Bar -->
+<div class="category-bar">
+  <button class="category-btn active" data-category="technology">Technology</button>
+  <button class="category-btn" data-category="nature">Nature</button>
+  <button class="category-btn" data-category="people">People</button>
+  <button class="category-btn" data-category="architecture">Architecture</button>
+  <button class="category-btn" data-category="animals">Animals</button>
+  <button class="category-btn" data-category="travel">Travel</button>
+  <button class="category-btn" data-category="fashion">Fashion</button>
+  <button class="category-btn" data-category="sports">Sports</button>
+  <button class="category-btn" data-category="food">Food</button>
+</div>
 
   <!-- Bottom Navigation -->
   <div class="bottom-nav">
@@ -265,6 +337,8 @@ nav {
 
 <div class="gallery" id="gallery"></div>
 <div class="loading" id="loading">Loading...</div>
+<button class="load-more" id="load-more">Load More</button>
+
 
 <div class="modal" id="modal">
   <span class="close" id="close">&times;</span>
@@ -276,70 +350,75 @@ nav {
   </div>
 </div>
 <script>
+  const accessKey = 'rp9_shDmKuIKGdLrL6g0l7-vvAWYuf2RTSa717SRuM0';
   const gallery = document.getElementById('gallery');
   const modal = document.getElementById('modal');
   const modalImg = document.getElementById('modal-img');
   const modalDesc = document.getElementById('modal-desc');
+  const similarItems = document.getElementById('similar-items');
   const closeBtn = document.getElementById('close');
   const loadingDiv = document.getElementById('loading');
   
-  const perFetch = 12;
+  const perFetch = 12; // Number of images per fetch
   let loading = false;
   let query = 'technology';
   
-  // Detect backend URL automatically
-  const BACKEND_URL = window.location.hostname.includes('localhost')
-    ? 'http://localhost:5500'
-    : 'https://iv-blue.vercel.app';
-  
-  // Shuffle array helper
-  function shuffleArray(array) {
-    return array.sort(() => Math.random() - 0.5);
-  }
-  
-  // Fetch images from backend
-  async function fetchImages(query, count = perFetch) {
+  // Fetch random images from Unsplash
+  async function fetchImages(query) {
+    loading = true;
     loadingDiv.style.display = 'block';
     try {
-      const res = await fetch(`${BACKEND_URL}/api/images?query=${query}&count=${count}`);
+      const res = await fetch(`https://api.unsplash.com/photos/random?client_id=${accessKey}&count=${perFetch}&query=${query}`);
       const data = await res.json();
-      return data;
-    } catch (err) {
-      console.error('Failed to fetch images:', err);
-      return [];
-    } finally {
+      loading = false;
       loadingDiv.style.display = 'none';
+      return data;
+    } catch (error) {
+      console.error("Error fetching images:", error);
+      loading = false;
+      loadingDiv.style.display = 'none';
+      return [];
     }
   }
   
   // Load gallery
   async function loadGallery() {
     if (loading) return;
-    loading = true;
-    const images = await fetchImages(query, perFetch);
-    shuffleArray(images).forEach(img => {
+    const images = await fetchImages(query);
+    images.forEach(img => {
       const imageElem = document.createElement('img');
-      imageElem.src = img.urls.regular;
+      imageElem.src = img.urls.regular; // Medium quality for gallery
       imageElem.alt = img.alt_description || 'Unsplash Image';
-      imageElem.loading = 'lazy';
+      imageElem.loading = 'lazy'; // Lazy load
       imageElem.addEventListener('click', () => openModal(img));
       gallery.appendChild(imageElem);
     });
-    loading = false;
   }
   
   // Open modal
   function openModal(img) {
     modal.style.display = 'flex';
-    modalImg.src = img.urls.regular;
+    modalImg.src = img.urls.full; // Higher quality in modal
     modalDesc.textContent = img.alt_description || 'No description available';
+    similarItems.innerHTML = '';
+  
+    // Fetch similar items (optional random images)
+    fetchImages(query).then(similar => {
+      similar.forEach(s => {
+        const simImg = document.createElement('img');
+        simImg.src = s.urls.small;
+        simImg.alt = s.alt_description || 'Similar Image';
+        simImg.addEventListener('click', () => openModal(s));
+        similarItems.appendChild(simImg);
+      });
+    });
   }
   
   // Close modal
-  closeBtn.onclick = () => (modal.style.display = 'none');
+  closeBtn.onclick = () => modal.style.display = 'none';
   window.onclick = e => {
     if (e.target == modal) modal.style.display = 'none';
-  };
+  }
   
   // Infinite scroll
   window.addEventListener('scroll', () => {
@@ -351,6 +430,7 @@ nav {
   // Initial load
   loadGallery();
   </script>
+  
   
   
   <!-- Linking JavaScript file -->
