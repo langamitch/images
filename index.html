@@ -350,137 +350,161 @@ nav {
     <div class="similar-items" id="similar-items"></div>
   </div>
 </div>
-<script>
-  const accessKey = 'rp9_shDmKuIKGdLrL6g0l7-vvAWYuf2RTSa717SRuM0';
-  const gallery = document.getElementById('gallery');
-  const modal = document.getElementById('modal');
-  const modalImg = document.getElementById('modal-img');
-  const modalDesc = document.getElementById('modal-desc');
-  const similarItems = document.getElementById('similar-items');
-  const closeBtn = document.getElementById('close');
-  const loadingDiv = document.getElementById('loading');
-  const loadMoreBtn = document.getElementById('load-more');
-  
-  const perFetch = 12;
-  let loading = false;
-  let query = 'technology';
-  
-  // Fetch images from Unsplash
-  async function fetchImages(query) {
-    loading = true;
-    loadingDiv.style.display = 'block';
-    try {
-      const res = await fetch(`https://api.unsplash.com/photos/random?client_id=${accessKey}&count=${perFetch}&query=${query}`);
-      const data = await res.json();
-      loading = false;
-      loadingDiv.style.display = 'none';
-  
-      // If data is empty or error
-      if (!Array.isArray(data)) {
-        showLoadMore();
-        return [];
-      }
-  
-      return data;
-    } catch (error) {
-      console.error("Error fetching images:", error);
-      loading = false;
-      loadingDiv.style.display = 'none';
-      showLoadMore();
-      return [];
-    }
-  }
-  
-  // Load gallery
-  async function loadGallery() {
-    const images = await fetchImages(query);
-    if (images.length === 0) {
-      showLoadMore();
-      return;
-    }
-    images.forEach(img => {
-      const imageElem = document.createElement('img');
-      imageElem.src = img.urls.regular;
-      imageElem.alt = img.alt_description || 'Unsplash Image';
-      imageElem.loading = 'lazy';
-      imageElem.addEventListener('click', () => openModal(img));
-      gallery.appendChild(imageElem);
-    });
-    hideLoadMore();
-  }
-  
-  // Show load more button
-  function showLoadMore() {
-    loadMoreBtn.style.display = 'block';
-  }
-  
-  // Hide load more button
-  function hideLoadMore() {
-    loadMoreBtn.style.display = 'none';
-  }
-  
-  // Open modal
-  function openModal(img) {
-    modal.style.display = 'flex';
-    modalImg.src = img.urls.full;
-    modalDesc.textContent = img.alt_description || 'No description available';
-    similarItems.innerHTML = '';
-  
-    fetchImages(query).then(similar => {
-      similar.forEach(s => {
-        const simImg = document.createElement('img');
-        simImg.src = s.urls.small;
-        simImg.alt = s.alt_description || 'Similar Image';
-        simImg.addEventListener('click', () => openModal(s));
-        similarItems.appendChild(simImg);
-      });
-    });
-  }
-  
-  // Close modal
-  closeBtn.onclick = () => modal.style.display = 'none';
-  window.onclick = e => {
-    if (e.target == modal) modal.style.display = 'none';
-  }
-  
-  // Infinite scroll
-  window.addEventListener('scroll', () => {
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 && !loading) {
-      loadGallery();
-    }
-  });
-  
-  // Load more button click
-  loadMoreBtn.addEventListener('click', () => {
-    hideLoadMore();
-    loadGallery();
-  });
-  
-  // Category buttons logic
-  const categoryButtons = document.querySelectorAll('.category-btn');
-  categoryButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      categoryButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-  
-      query = btn.dataset.category;
-      gallery.innerHTML = '';
-      loadGallery();
-    });
-  });
-  
-  // Initial load
-  loadGallery();
-  </script>
-  
-  
-  
-  
+
   <!-- Linking JavaScript file -->
-  <script src="server.js"></script>
-  
-    <!-- Linking JavaScript file -->
-  <script src="api/images.js"></script>
+  <script >
+
+    const pexelsKey = 'VzvQE3vRaKJI6GdXsvNYMNidtB3NMRMHawJwemyUeARPxf5wfS90taTL';
+const pixabayKey = '51945110-c9ce4fbb288952085fb9e444f';
+const unsplashKey = 'rp9_shDmKuIKGdLrL6g0l7-vvAWYuf2RTSa717SRuM0';
+
+let page = 1;
+let query = 'technology';
+let perPage = 6;
+let allImages = [];
+let isLoading = false;
+
+// Fetch from Pexels
+async function fetchPexels(q, p) {
+    const res = await fetch(`https://api.pexels.com/v1/search?query=${q}&per_page=${perPage}&page=${p}`, {
+        headers: { Authorization: pexelsKey }
+    });
+    const data = await res.json();
+    return data.photos.map(img => ({
+        url: img.src.large,
+        photographer: img.photographer,
+        source: 'Pexels'
+    }));
+}
+
+// Fetch from Pixabay
+async function fetchPixabay(q, p) {
+    const res = await fetch(`https://pixabay.com/api/?key=${pixabayKey}&q=${q}&image_type=photo&per_page=${perPage}&page=${p}`);
+    const data = await res.json();
+    return data.hits.map(img => ({
+        url: img.largeImageURL,
+        photographer: img.user,
+        source: 'Pixabay'
+    }));
+}
+
+// Fetch from Unsplash (with fallback)
+async function fetchUnsplash(q, p) {
+    try {
+        const res = await fetch(`https://api.unsplash.com/search/photos?page=${p}&per_page=${perPage}&query=${q}&client_id=${unsplashKey}`);
+        if (!res.ok) throw new Error('Unsplash failed');
+        const data = await res.json();
+        return data.results.map(img => ({
+            url: img.urls.regular,
+            photographer: img.user.name,
+            source: 'Unsplash'
+        }));
+    } catch {
+        return []; // Fallback to avoid breaking the UI
+    }
+}
+
+// Fetch All Sources
+async function fetchAll(q = query) {
+    if (isLoading) return;
+    isLoading = true;
+    document.getElementById('loading').style.display = 'block';
+    query = q;
+    page = 1;
+    allImages = [];
+
+    try {
+        const [pexels, pixabay, unsplash] = await Promise.all([
+            fetchPexels(q, page),
+            fetchPixabay(q, page),
+            fetchUnsplash(q, page)
+        ]);
+
+        allImages = [...pexels, ...pixabay, ...unsplash].sort(() => Math.random() - 0.5);
+        renderImages(true);
+    } catch (error) {
+        console.error('Error fetching images:', error);
+    }
+
+    document.getElementById('loading').style.display = 'none';
+    isLoading = false;
+}
+
+// Render images
+function renderImages(clear = false) {
+    const gallery = document.getElementById('gallery');
+    const content = allImages.map(img => `
+        <div class="card">
+            <img src="${img.url}" alt="Image" onclick="openModal('${img.url}', '${img.photographer}', '${img.source}')">
+            
+        </div>
+    `).join('');
+
+    if (clear) {
+        gallery.innerHTML = content;
+    } else {
+        gallery.insertAdjacentHTML('beforeend', content);
+    }
+}
+
+// Load more
+async function loadMore() {
+    if (isLoading) return;
+    isLoading = true;
+    document.getElementById('loading').style.display = 'block';
+
+    try {
+        page++;
+        const [pexels, pixabay, unsplash] = await Promise.all([
+            fetchPexels(query, page),
+            fetchPixabay(query, page),
+            fetchUnsplash(query, page)
+        ]);
+
+        const newImages = [...pexels, ...pixabay, ...unsplash].sort(() => Math.random() - 0.5);
+        allImages = [...allImages, ...newImages];
+        renderImages();
+    } catch (error) {
+        console.error('Error loading more images:', error);
+    }
+
+    document.getElementById('loading').style.display = 'none';
+    isLoading = false;
+}
+
+// Infinite Scroll + Load More fallback
+window.addEventListener('scroll', () => {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
+        loadMore();
+    }
+});
+
+document.getElementById('load-more').addEventListener('click', loadMore);
+
+// Category Buttons
+document.querySelectorAll('.category-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        fetchAll(btn.getAttribute('data-category'));
+    });
+});
+
+// Modal Logic
+function openModal(url, photographer, source) {
+    document.getElementById('modal').style.display = 'flex';
+    document.getElementById('modal-img').src = url;
+    document.getElementById('modal-desc').innerText = `${photographer} (${source})`;
+}
+
+document.getElementById('close').addEventListener('click', () => {
+    document.getElementById('modal').style.display = 'none';
+});
+
+// Initial load
+fetchAll();
+
+    </script>
   
 </body>
 </html>
