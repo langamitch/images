@@ -1,8 +1,9 @@
-require('dotenv').config({ path: './key.env' });
-import fetch from 'node-fetch'; // Node.js v20+ uses ESM style
+import dotenv from 'dotenv';
+import fetch from 'node-fetch';
+import express from 'express';
+import cors from 'cors';
 
-const express = require('express');
-const cors = require('cors');
+dotenv.config({ path: './key.env' });
 
 const app = express();
 const PORT = 5500;
