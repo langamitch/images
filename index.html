@@ -254,7 +254,7 @@ nav {
   gap: 15px;
   overflow-x: auto;
  padding:0 10px;
-  background: #111;
+  background: #000;
   position: sticky;
   top: 0px; /* stays below navbar */
   z-index: 900;
@@ -267,13 +267,13 @@ nav {
 
 .category-btn {
   background: transparent;
-  color: #333;
+  color: #fff;
   border: none;
   padding: 10px 0px;
   border-radius: 0px;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   white-space: nowrap; /* Prevent text wrapping */
   transition: background 0.3s ease;
 }
@@ -285,6 +285,7 @@ nav {
 .category-btn.active {
   background: transparent;
   text-decoration: underline;
+  text-underline-offset: 5px;
   color: white;
 }
 
@@ -358,12 +359,13 @@ nav {
   const similarItems = document.getElementById('similar-items');
   const closeBtn = document.getElementById('close');
   const loadingDiv = document.getElementById('loading');
+  const loadMoreBtn = document.getElementById('load-more');
   
-  const perFetch = 12; // Number of images per fetch
+  const perFetch = 12;
   let loading = false;
   let query = 'technology';
   
-  // Fetch random images from Unsplash
+  // Fetch images from Unsplash
   async function fetchImages(query) {
     loading = true;
     loadingDiv.style.display = 'block';
@@ -372,37 +374,58 @@ nav {
       const data = await res.json();
       loading = false;
       loadingDiv.style.display = 'none';
+  
+      // If data is empty or error
+      if (!Array.isArray(data)) {
+        showLoadMore();
+        return [];
+      }
+  
       return data;
     } catch (error) {
       console.error("Error fetching images:", error);
       loading = false;
       loadingDiv.style.display = 'none';
+      showLoadMore();
       return [];
     }
   }
   
   // Load gallery
   async function loadGallery() {
-    if (loading) return;
     const images = await fetchImages(query);
+    if (images.length === 0) {
+      showLoadMore();
+      return;
+    }
     images.forEach(img => {
       const imageElem = document.createElement('img');
-      imageElem.src = img.urls.regular; // Medium quality for gallery
+      imageElem.src = img.urls.regular;
       imageElem.alt = img.alt_description || 'Unsplash Image';
-      imageElem.loading = 'lazy'; // Lazy load
+      imageElem.loading = 'lazy';
       imageElem.addEventListener('click', () => openModal(img));
       gallery.appendChild(imageElem);
     });
+    hideLoadMore();
+  }
+  
+  // Show load more button
+  function showLoadMore() {
+    loadMoreBtn.style.display = 'block';
+  }
+  
+  // Hide load more button
+  function hideLoadMore() {
+    loadMoreBtn.style.display = 'none';
   }
   
   // Open modal
   function openModal(img) {
     modal.style.display = 'flex';
-    modalImg.src = img.urls.full; // Higher quality in modal
+    modalImg.src = img.urls.full;
     modalDesc.textContent = img.alt_description || 'No description available';
     similarItems.innerHTML = '';
   
-    // Fetch similar items (optional random images)
     fetchImages(query).then(similar => {
       similar.forEach(s => {
         const simImg = document.createElement('img');
@@ -427,9 +450,29 @@ nav {
     }
   });
   
+  // Load more button click
+  loadMoreBtn.addEventListener('click', () => {
+    hideLoadMore();
+    loadGallery();
+  });
+  
+  // Category buttons logic
+  const categoryButtons = document.querySelectorAll('.category-btn');
+  categoryButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      categoryButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+  
+      query = btn.dataset.category;
+      gallery.innerHTML = '';
+      loadGallery();
+    });
+  });
+  
   // Initial load
   loadGallery();
   </script>
+  
   
   
   
