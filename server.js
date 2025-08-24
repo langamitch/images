@@ -3,7 +3,7 @@ import fetch from 'node-fetch';
 import express from 'express';
 import cors from 'cors';
 
-dotenv.config({ path: './key.env' });
+dotenv.config({ path: 'key.env' });
 
 const app = express();
 const PORT = 5500;
